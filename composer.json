@@ -1,0 +1,42 @@
+{
+  "name": "webappid/laravel-ddd",
+  "description": "Laravel DDD",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Dyan Galih",
+      "email": "dyan.galih@gmail.com"
+    }
+  ],
+  "minimum-stability": "dev",
+  "autoload": {
+    "psr-4": {
+      "WebAppId\\DDD\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "WebAppId\\DDD\\Tests\\": "src/tests"
+    }
+  },
+  "require": {
+    "php": ">=7.2.0",
+    "illuminate/support": "~5.5",
+    "doctrine/dbal": "^2.5",
+    "nesbot/carbon": "^1.33",
+    "ext-json": "*"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "7.2.6",
+    "squizlabs/php_codesniffer": "3.*",
+    "mockery/mockery": "dev-master@dev",
+    "orchestra/testbench": "~3.5"
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "1.0-dev"
+    },
+    "laravel": {
+    }
+  }
+}
