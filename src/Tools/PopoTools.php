@@ -8,6 +8,8 @@
 
 namespace WebAppId\DDD\Tools;
 
+use Illuminate\Database\Eloquent\Collection;
+
 /**
  * @author: Dyan Galih<dyan.galih@gmail.com> https://dyangalih.com
  * Class PopoTools
@@ -35,9 +37,14 @@ class PopoTools
             if (stripos($key, "\0") === 0) {
                 $newKey = $this->fixKeyName($key);
                 $this->replaceKey($objectAsArray, $key, $newKey);
+            }else{
+                $newKey = $key;
             }
-        
-            if (is_object($value)) {
+    
+            if($value instanceof Collection){
+                $value = $this->serialize($objectAsArray[$newKey]);
+                $objectAsArray[$newKey] = $value['items'];
+            }elseif(is_object($value)) {
                 $objectAsArray[$newKey] = $this->serialize($objectAsArray[$newKey]);
             }
         }
