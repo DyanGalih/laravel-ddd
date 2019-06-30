@@ -32,23 +32,27 @@ class PopoTools
      */
     public function serialize($object)
     {
-        $objectAsArray = (array) $object;
+        $objectAsArray = (array)$object;
         foreach ($objectAsArray as $key => $value) {
             if (stripos($key, "\0") === 0) {
                 $newKey = $this->fixKeyName($key);
                 $this->replaceKey($objectAsArray, $key, $newKey);
-            }else{
+            } else {
                 $newKey = $key;
             }
-    
-            if($value instanceof Collection){
+            
+            if ($value instanceof Collection) {
                 $value = $this->serialize($objectAsArray[$newKey]);
                 $objectAsArray[$newKey] = $value['items'];
-            }elseif(is_object($value)) {
+            } elseif (is_object($value)) {
                 $objectAsArray[$newKey] = $this->serialize($objectAsArray[$newKey]);
+            } elseif (is_array($value)) {
+                for ($i = 0; $i < count($value); $i++) {
+                    $objectAsArray[$newKey][$i] = $this->serialize($value[$i]);
+                }
             }
         }
-    
+        
         return $objectAsArray;
     }
     
@@ -73,7 +77,7 @@ class PopoTools
      * @param string $oldKey
      * @return string
      */
-    function fixKeyName(string $oldKey) : string
+    function fixKeyName(string $oldKey): string
     {
         return substr($oldKey, strpos($oldKey, "\0", 2) + 1);
     }
