@@ -9,6 +9,7 @@
 namespace WebAppId\DDD\Tools;
 
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 
 /**
  * @author: Dyan Galih<dyan.galih@gmail.com> https://dyangalih.com
@@ -33,22 +34,35 @@ class PopoTools
     public function serialize($object)
     {
         $objectAsArray = (array)$object;
+    
         foreach ($objectAsArray as $key => $value) {
-            if (stripos($key, "\0") === 0) {
-                $newKey = $this->fixKeyName($key);
+        
+            $newKey = $this->fixKey($key, $objectAsArray);
+            if ($newKey != $key) {
                 $this->replaceKey($objectAsArray, $key, $newKey);
-            } else {
-                $newKey = $key;
             }
-            
             if ($value instanceof Collection) {
                 $value = $this->serialize($objectAsArray[$newKey]);
                 $objectAsArray[$newKey] = $value['items'];
             } elseif (is_object($value)) {
                 $objectAsArray[$newKey] = $this->serialize($objectAsArray[$newKey]);
             } elseif (is_array($value)) {
-                for ($i = 0; $i < count($value); $i++) {
-                    $objectAsArray[$newKey][$i] = $this->serialize($value[$i]);
+                if (isset($value[0])) {
+                    for ($i = 0; $i < count($value); $i++) {
+                        if ($value[$i] instanceof Model) {
+                            //nothing todo
+                        } else {
+                            $objectAsArrayChild = (array)$value[$i];
+                            foreach ($objectAsArrayChild as $childKey => $childValue) {
+                                $newChildKey = $this->fixKey($childKey, $objectAsArrayChild);
+                                if ($newKey != $key) {
+                                    $this->replaceKey($objectAsArrayChild, $childKey, $newChildKey);
+                                }
+                            }
+                            $value[$i] = $objectAsArrayChild;
+                        }
+                        $objectAsArray[$newKey] = $value;
+                    }
                 }
             }
         }
