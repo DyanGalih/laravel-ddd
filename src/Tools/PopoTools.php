@@ -27,6 +27,16 @@ class PopoTools
         return json_encode($this->serialize($object));
     }
     
+    private function fixKey($key): string
+    {
+        if (stripos($key, "\0") === 0) {
+            $newKey = $this->fixKeyName($key);
+        } else {
+            $newKey = $key;
+        }
+        return $newKey;
+    }
+    
     /**
      * @param $object
      * @return array
@@ -34,10 +44,10 @@ class PopoTools
     public function serialize($object)
     {
         $objectAsArray = (array)$object;
-    
-        foreach ($objectAsArray as $key => $value) {
         
-            $newKey = $this->fixKey($key, $objectAsArray);
+        foreach ($objectAsArray as $key => $value) {
+            
+            $newKey = $this->fixKey($key);
             if ($newKey != $key) {
                 $this->replaceKey($objectAsArray, $key, $newKey);
             }
@@ -54,7 +64,7 @@ class PopoTools
                         } else {
                             $objectAsArrayChild = (array)$value[$i];
                             foreach ($objectAsArrayChild as $childKey => $childValue) {
-                                $newChildKey = $this->fixKey($childKey, $objectAsArrayChild);
+                                $newChildKey = $this->fixKey($childKey);
                                 if ($newKey != $key) {
                                     $this->replaceKey($objectAsArrayChild, $childKey, $newChildKey);
                                 }
