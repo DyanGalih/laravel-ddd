@@ -62,17 +62,12 @@ class PopoTools
                         if ($value[$i] instanceof Model) {
                             //nothing todo
                         } else {
-                            $objectAsArrayChild = (array)$value[$i];
-                            foreach ($objectAsArrayChild as $childKey => $childValue) {
-                                $newChildKey = $this->fixKey($childKey);
-                                if ($newKey != $key) {
-                                    $this->replaceKey($objectAsArrayChild, $childKey, $newChildKey);
-                                }
+                            if (is_object($value[$i])) {
+                                $value[$i] = $this->serialize($value[$i]);
                             }
-                            $value[$i] = $objectAsArrayChild;
                         }
-                        $objectAsArray[$newKey] = $value;
                     }
+                    $objectAsArray[$newKey] = $value;
                 }
             }
         }
