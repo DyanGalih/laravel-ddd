@@ -17,27 +17,74 @@ use ReflectionProperty;
 class Lazy
 {
     /**
+     * @var int
+     */
+    public const NONE = 1;
+    
+    /**
+     * @Var int
+     */
+    public const VALIDATE_ORIGIN = 2;
+    
+    /**
+     * @var int
+     */
+    public const VALIDATE_DEST = 3;
+    
+    /**
+     * @var int
+     */
+    public const VALIDATE_BOTH = 4;
+    
+    /**
+     * @var int
+     */
+    public const AUTOCAST = 5;
+    
+    
+    /**
      * @param object $fromClass
      * @param object $toClass
      * @param bool $strict
      * @return object
      * @throws ReflectionException
      */
-    public static function copy(object $fromClass, object $toClass, bool $strict = false): object
+    public static function copy(object $fromClass, object $toClass, int $option = self::NONE): object
     {
-        if (!$strict) {
-            foreach (get_object_vars($fromClass) as $key => $value) {
-                $toClass->$key = $value;
-            }
-        } else {
-            foreach (get_object_vars($toClass) as $key => $value) {
-                if (property_exists($toClass, $key)) {
-                    if (self::_validate($fromClass, $toClass, $key)) {
-                        $toClass->$key = $fromClass->$key;
-                    }
+        switch ($option) {
+            case self::NONE:
+                foreach (get_object_vars($fromClass) as $key => $value) {
+                    $toClass->$key = $value;
                 }
-            }
+                break;
+            case self::VALIDATE_ORIGIN:
+                foreach (get_object_vars($fromClass) as $key => $value) {
+                    if (self::_validate($fromClass, $fromClass, $key)) {
+                        $toClass->$key = $value;
+                    }
+                };
+                break;
+            case self::VALIDATE_DEST:
+                foreach (get_object_vars($toClass) as $key => $value) {
+                    if (property_exists($toClass, $key)) {
+                        if (self::_validate($fromClass, $toClass, $key)) {
+                            $toClass->$key = $fromClass->$key;
+                        }
+                    }
+                };
+                break;
+            case self::VALIDATE_BOTH:
+                foreach (get_object_vars($fromClass) as $key => $value) {
+                    if (property_exists($toClass, $key)) {
+                        if (self::_validate($fromClass, $fromClass, $key) && self::_validate($fromClass, $toClass, $key)) {
+                            $toClass->$key = $value;
+                        }
+                    }
+                };
+                break;
+            
         }
+        
         return $toClass;
     }
     
@@ -51,14 +98,20 @@ class Lazy
      */
     private static function _validate($fromClass, $toClass, $key)
     {
-        $property = new ReflectionProperty($toClass, $key);
-        $propertyClass = self::getVar($property);
+        $propertyClass = self::_getVarValue($toClass, $key);
         
         if (gettype($fromClass->$key) == $propertyClass) {
             return true;
         } else {
             throw new Exception('Type Mismatch on property ' . $key . '. The property type is ' . $propertyClass . ' but the value type is ' . gettype($fromClass->$key));
         }
+    }
+    
+    private static function _getVarValue($toClass, $key)
+    {
+        $property = new ReflectionProperty($toClass, $key);
+        $propertyClass = self::getVar($property);
+        return $propertyClass;
     }
     
     /**
@@ -84,12 +137,32 @@ class Lazy
      * @return object
      * @throws ReflectionException
      */
-    public static function copyFromArray(array $fromArray, object $toClass): object
+    public static function copyFromArray(array $fromArray, object $toClass, int $option = self::NONE): object
     {
         
         foreach (get_object_vars($toClass) as $key => $value) {
-            self::_validate((object)$fromArray, $toClass, $key);
-            $toClass->$key = $fromArray[$key];
+            
+            if ($option == self::NONE) {
+                self::_validate((object)$fromArray, $toClass, $key);
+                $toClass->$key = $fromArray[$key];
+            } else {
+                $propertyClass = self::_getVarValue($toClass, $key);
+                switch ($propertyClass) {
+                    case ["integer", "int"]:
+                        $toClass->$key = (int)$fromArray[$key];;
+                        break;
+                    case "float":
+                        $toClass->$key = (float)$fromArray[$key];;
+                        break;
+                    case "double":
+                        $toClass->$key = (double)$fromArray[$key];;
+                        break;
+                    case ["bool", "boolean"]:
+                        $toClass->$key = (bool)$fromArray[$key];;
+                        break;
+                }
+            }
+            
         }
         return $toClass;
     }
@@ -97,12 +170,13 @@ class Lazy
     /**
      * @param string $fromJson
      * @param object $toClass
+     * @param int $option
      * @return object
      * @throws ReflectionException
      */
-    public static function copyFromJson(string $fromJson, object $toClass): object
+    public static function copyFromJson(string $fromJson, object $toClass, int $option = self::NONE): object
     {
-        return self::copyFromArray(json_decode($fromJson, true), $toClass);
+        return self::copyFromArray(json_decode($fromJson, true), $toClass, $option);
     }
     
     /**
