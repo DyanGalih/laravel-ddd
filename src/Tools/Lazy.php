@@ -151,8 +151,9 @@ class Lazy
                 $toClass->$key = $fromArray[$key];
             } else {
                 $propertyClass = self::_getVarValue($toClass, $key);
+                
                 switch ($propertyClass) {
-                    case ["integer", "int"]:
+                    case "integer":
                         $toClass->$key = (int)$fromArray[$key];;
                         break;
                     case "float":
@@ -161,7 +162,7 @@ class Lazy
                     case "double":
                         $toClass->$key = (double)$fromArray[$key];;
                         break;
-                    case ["bool", "boolean"]:
+                    case "boolean":
                         $toClass->$key = (bool)$fromArray[$key];;
                         break;
                 }
