@@ -45,7 +45,7 @@ class Lazy
     /**
      * @param object $fromClass
      * @param object $toClass
-     * @param bool $strict
+     * @param int $option
      * @return object
      * @throws ReflectionException
      */
@@ -93,7 +93,6 @@ class Lazy
      * @param $toClass
      * @param $key
      * @return bool
-     * @throws ReflectionException
      * @throws Exception
      */
     private static function _validate($fromClass, $toClass, $key)
@@ -109,15 +108,21 @@ class Lazy
     
     private static function _getVarValue($toClass, $key)
     {
-        $property = new ReflectionProperty($toClass, $key);
-        $propertyClass = self::getVar($property);
+        $propertyClass = "";
+        try {
+            $property = new ReflectionProperty($toClass, $key);
+            $propertyClass = self::getVar($property);
+        } catch (ReflectionException $e) {
+            report($e);
+        }
+        
         return $propertyClass;
     }
     
     /**
      * @param object $class
      * @return bool
-     * @throws ReflectionException
+     * @throws Exception
      */
     public static function validate(object $class)
     {
@@ -134,14 +139,13 @@ class Lazy
     /**
      * @param array $fromArray
      * @param object $toClass
+     * @param int $option
      * @return object
-     * @throws ReflectionException
+     * @throws Exception
      */
     public static function copyFromArray(array $fromArray, object $toClass, int $option = self::NONE): object
     {
-        
         foreach (get_object_vars($toClass) as $key => $value) {
-            
             if ($option == self::NONE) {
                 self::_validate((object)$fromArray, $toClass, $key);
                 $toClass->$key = $fromArray[$key];
@@ -172,7 +176,7 @@ class Lazy
      * @param object $toClass
      * @param int $option
      * @return object
-     * @throws ReflectionException
+     * @throws Exception
      */
     public static function copyFromJson(string $fromJson, object $toClass, int $option = self::NONE): object
     {
