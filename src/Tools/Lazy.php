@@ -31,4 +31,27 @@ class Lazy
         }
         return $toClass;
     }
+    
+    /**
+     * @param array $fromArray
+     * @param object $toClass
+     * @return object
+     */
+    public static function copyFromArray(array $fromArray, object $toClass): object
+    {
+        foreach (get_object_vars($toClass) as $key => $value) {
+            $toClass->$key = $fromArray[$key];
+        }
+        return $toClass;
+    }
+    
+    /**
+     * @param string $fromJson
+     * @param object $toClass
+     * @return object
+     */
+    public static function copyFromJson(string $fromJson, object $toClass): object
+    {
+        return self::copyFromArray(json_decode($fromJson,true), $toClass);
+    }
 }
