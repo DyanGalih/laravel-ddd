@@ -165,8 +165,11 @@ class Lazy
                     case "boolean":
                         $toClass->$key = (bool)$fromArray[$key];;
                         break;
-                    default :
+                    case "string" :
                         $toClass->$key = (string)$fromArray[$key];
+                        break;
+                    default:
+                        $toClass->$key = $fromArray[$key];
                         break;
                 }
             }
