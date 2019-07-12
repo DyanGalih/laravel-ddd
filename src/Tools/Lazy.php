@@ -47,7 +47,7 @@ class Lazy
      * @param object $toClass
      * @param int $option
      * @return object
-     * @throws ReflectionException
+     * @throws Exception
      */
     public static function copy(object $fromClass, object $toClass, int $option = self::NONE): object
     {
@@ -154,22 +154,22 @@ class Lazy
                 
                 switch ($propertyClass) {
                     case "integer":
-                        $toClass->$key = (int)$fromArray[$key];;
+                        $toClass->$key = isset($fromArray[$key]) ? (int)$fromArray[$key] : null;
                         break;
                     case "float":
-                        $toClass->$key = (float)$fromArray[$key];;
+                        $toClass->$key = isset($fromArray[$key]) ? (float)$fromArray[$key] : null;
                         break;
                     case "double":
-                        $toClass->$key = (double)$fromArray[$key];;
+                        $toClass->$key = isset($fromArray[$key]) ? (double)$fromArray[$key] : null;
                         break;
                     case "boolean":
-                        $toClass->$key = (bool)$fromArray[$key];;
+                        $toClass->$key = isset($fromArray[$key]) ? (bool)$fromArray[$key] : null;
                         break;
                     case "string" :
-                        $toClass->$key = (string)$fromArray[$key];
+                        $toClass->$key = isset($fromArray[$key]) ? (string)$fromArray[$key] : null;
                         break;
                     default:
-                        $toClass->$key = $fromArray[$key];
+                        $toClass->$key = isset($fromArray[$key]) ? $fromArray[$key] : null;
                         break;
                 }
             }
