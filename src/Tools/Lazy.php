@@ -20,74 +20,78 @@ class Lazy
      * @var int
      */
     public const NONE = 1;
-    
+
     /**
      * @Var int
      */
     public const VALIDATE_ORIGIN = 2;
-    
+
     /**
      * @var int
      */
     public const VALIDATE_DEST = 3;
-    
+
     /**
      * @var int
      */
     public const VALIDATE_BOTH = 4;
-    
+
     /**
      * @var int
      */
     public const AUTOCAST = 5;
-    
-    
+
+
     /**
      * @param object $fromClass
      * @param object $toClass
      * @param int $option
      * @return object
-     * @throws Exception
      */
     public static function copy(object $fromClass, object $toClass, int $option = self::NONE): object
     {
-        switch ($option) {
-            case self::NONE:
-                foreach (get_object_vars($fromClass) as $key => $value) {
-                    $toClass->$key = $value;
-                }
-                break;
-            case self::VALIDATE_ORIGIN:
-                foreach (get_object_vars($fromClass) as $key => $value) {
-                    if (self::_validate($fromClass, $fromClass, $key)) {
+        try {
+            switch ($option) {
+                case self::NONE:
+                    foreach (get_object_vars($fromClass) as $key => $value) {
                         $toClass->$key = $value;
                     }
-                };
-                break;
-            case self::VALIDATE_DEST:
-                foreach (get_object_vars($toClass) as $key => $value) {
-                    if (property_exists($toClass, $key)) {
-                        if (self::_validate($fromClass, $toClass, $key)) {
-                            $toClass->$key = $fromClass->$key;
-                        }
-                    }
-                };
-                break;
-            case self::VALIDATE_BOTH:
-                foreach (get_object_vars($fromClass) as $key => $value) {
-                    if (property_exists($toClass, $key)) {
-                        if (self::_validate($fromClass, $fromClass, $key) && self::_validate($fromClass, $toClass, $key)) {
+                    break;
+                case self::VALIDATE_ORIGIN:
+                    foreach (get_object_vars($fromClass) as $key => $value) {
+                        if (self::_validate($fromClass, $fromClass, $key)) {
                             $toClass->$key = $value;
                         }
-                    }
-                };
-                break;
-            
+                    };
+                    break;
+                case self::VALIDATE_DEST:
+                    foreach (get_object_vars($toClass) as $key => $value) {
+                        if (property_exists($toClass, $key)) {
+                            if (self::_validate($fromClass, $toClass, $key)) {
+                                $toClass->$key = $fromClass->$key;
+                            }
+                        }
+                    };
+                    break;
+                case self::VALIDATE_BOTH:
+                    foreach (get_object_vars($fromClass) as $key => $value) {
+                        if (property_exists($toClass, $key)) {
+                            if (self::_validate($fromClass, $fromClass, $key) && self::_validate($fromClass, $toClass, $key)) {
+                                $toClass->$key = $value;
+                            }
+                        }
+                    };
+                    break;
+
+            }
+        } catch (Exception $exception) {
+            report($exception);
         }
-        
+
+
         return $toClass;
     }
-    
+
     /**
      * @param $fromClass
      * @param $toClass
@@ -98,14 +102,14 @@ class Lazy
     private static function _validate($fromClass, $toClass, $key)
     {
         $propertyClass = self::_getVarValue($toClass, $key);
-        
+
         if (gettype($fromClass->$key) == $propertyClass) {
             return true;
         } else {
             throw new Exception('Type Mismatch on property ' . $key . '. The property type is ' . $propertyClass . ' but the value type is ' . gettype($fromClass->$key));
         }
     }
-    
+
     private static function _getVarValue($toClass, $key)
     {
         $propertyClass = "";
@@ -115,10 +119,10 @@ class Lazy
         } catch (ReflectionException $e) {
             report($e);
         }
-        
+
         return $propertyClass;
     }
-    
+
     /**
      * @param object $class
      * @return bool
@@ -132,10 +136,10 @@ class Lazy
                 $status = self::_validate($class, $class, $key);
             }
         }
-        
+
         return $status;
     }
-    
+
     /**
      * @param array $fromArray
      * @param object $toClass
@@ -151,7 +155,7 @@ class Lazy
                 $toClass->$key = $fromArray[$key];
             } else {
                 $propertyClass = self::_getVarValue($toClass, $key);
-                
+
                 switch ($propertyClass) {
                     case "integer":
                         $toClass->$key = isset($fromArray[$key]) ? (int)$fromArray[$key] : null;
@@ -173,11 +177,11 @@ class Lazy
                         break;
                 }
             }
-            
+
         }
         return $toClass;
     }
-    
+
     /**
      * @param string $fromJson
      * @param object $toClass
@@ -189,7 +193,7 @@ class Lazy
     {
         return self::copyFromArray(json_decode($fromJson, true), $toClass, $option);
     }
-    
+
     /**
      * @param ReflectionProperty $property
      * @return mixed|null
@@ -199,7 +203,7 @@ class Lazy
         $typeMapping = [];
         $typeMapping['int'] = 'integer';
         $typeMapping['bool'] = 'boolean';
-        
+
         // Get the content of the @var annotation
         if (preg_match('/@var\s+([^\s]+)/', $property->getDocComment(), $matches)) {
             if (isset($typeMapping[$matches[1]])) {
