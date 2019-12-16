@@ -52,35 +52,31 @@ class Lazy
     {
         try {
             switch ($option) {
-                case self::NONE:
-                    foreach (get_object_vars($fromClass) as $key => $value) {
-                        $toClass->$key = $value;
-                    }
-                    break;
                 case self::VALIDATE_ORIGIN:
                     foreach (get_object_vars($fromClass) as $key => $value) {
                         if (self::_validate($fromClass, $fromClass, $key)) {
                             $toClass->$key = $value;
                         }
-                    };
+                    }
                     break;
                 case self::VALIDATE_DEST:
                     foreach (get_object_vars($toClass) as $key => $value) {
-                        if (property_exists($toClass, $key)) {
-                            if (self::_validate($fromClass, $toClass, $key)) {
-                                $toClass->$key = $fromClass->$key;
-                            }
+                        if (property_exists($toClass, $key) && (self::_validate($fromClass, $toClass, $key))) {
+                            $toClass->$key = $fromClass->$key;
                         }
-                    };
+                    }
                     break;
                 case self::VALIDATE_BOTH:
                     foreach (get_object_vars($fromClass) as $key => $value) {
-                        if (property_exists($toClass, $key)) {
-                            if (self::_validate($fromClass, $fromClass, $key) && self::_validate($fromClass, $toClass, $key)) {
-                                $toClass->$key = $value;
-                            }
+                        if (property_exists($toClass, $key) && self::_validate($fromClass, $fromClass, $key) && self::_validate($fromClass, $toClass, $key)) {
+                            $toClass->$key = $value;
                         }
-                    };
+                    }
+                    break;
+                default:
+                    foreach (get_object_vars($fromClass) as $key => $value) {
+                        $toClass->$key = $value;
+                    }
                     break;
 
             }
@@ -102,7 +98,6 @@ class Lazy
     private static function _validate($fromClass, $toClass, $key)
     {
         $propertyClass = self::_getVarValue($toClass, $key);
-
         if (gettype($fromClass->$key) == $propertyClass) {
             return true;
         } else {
@@ -149,11 +144,23 @@ class Lazy
      */
     public static function copyFromArray(array $fromArray, object $toClass, int $option = self::NONE): object
     {
-        foreach (get_object_vars($toClass) as $key => $value) {
+        $model = false;
+        if (method_exists($toClass, 'getFillable')) {
+            $varList = $toClass->getFillable();
+            $vars = array_flip($varList);
+            $model = true;
+        } else {
+            $vars = get_object_vars($toClass);
+        }
+        foreach ($vars as $key => $value) {
             if ($option == self::NONE) {
-                self::_validate((object)$fromArray, $toClass, $key);
-                $toClass->$key = $fromArray[$key];
-            } else {
+                if (!$model) {
+                    self::_validate((object)$fromArray, $toClass, $key);
+                }
+                if (isset($fromArray[$key])) {
+                    $toClass->$key = $fromArray[$key];
+                }
+            } elseif ($option == self::AUTOCAST) {
                 $propertyClass = self::_getVarValue($toClass, $key);
 
                 switch ($propertyClass) {
