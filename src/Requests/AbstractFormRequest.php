@@ -10,8 +10,11 @@ namespace WebAppId\DDD\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
- * @author: Dyan Galih<dyan.galih@gmail.com> https://dyangalih.com
+ * @author: Dyan Galih<dyan.galih@gmail.com>
+ * Date: 18/04/20
+ * Time: 18.55
  * Class AbstractFormRequest
+ * @package WebAppId\DDD\Requests
  */
 abstract class AbstractFormRequest extends FormRequest implements FormRequestContract
 {
@@ -22,12 +25,12 @@ abstract class AbstractFormRequest extends FormRequest implements FormRequestCon
     {
         return true;
     }
-    
+
     /**
      * @return mixed
      */
     abstract function rules(): array;
-    
+
     /**
      * @return array
      */
@@ -35,7 +38,7 @@ abstract class AbstractFormRequest extends FormRequest implements FormRequestCon
     {
         return [];
     }
-    
+
     /**
      * @return array
      */

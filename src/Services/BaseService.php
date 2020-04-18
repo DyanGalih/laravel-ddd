@@ -11,16 +11,19 @@ namespace WebAppId\DDD\Services;
 use Illuminate\Container\Container;
 
 /**
- * @author: Dyan Galih<dyan.galih@gmail.com> https://dyangalih.com
+ * @author: Dyan Galih<dyan.galih@gmail.com>
+ * Date: 18/04/20
+ * Time: 18.55
  * Class BaseService
+ * @package WebAppId\DDD\Services
  */
 class BaseService
 {
     /**
      * @var Container
      */
-    private $container;
-    
+    protected $container;
+
     /**
      * BaseService constructor.
      * @param Container $container
@@ -29,7 +32,7 @@ class BaseService
     {
         $this->container = $container;
     }
-    
+
     /**
      * @return Container
      */

@@ -12,12 +12,15 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * @author: Dyan Galih<dyan.galih@gmail.com> https://dyangalih.com
+ * @author: Dyan Galih<dyan.galih@gmail.com>
+ * Date: 18/04/20
+ * Time: 18.56
  * Class PopoTools
+ * @package WebAppId\DDD\Tools
  */
 class PopoTools
 {
-    
+
     /**
      * @param mixed $object
      * @return string|false
@@ -26,7 +29,7 @@ class PopoTools
     {
         return json_encode($this->serialize($object));
     }
-    
+
     private function fixKey($key): string
     {
         if (stripos($key, "\0") === 0) {
@@ -36,7 +39,7 @@ class PopoTools
         }
         return $newKey;
     }
-    
+
     /**
      * @param $object
      * @return array
@@ -44,9 +47,9 @@ class PopoTools
     public function serialize($object)
     {
         $objectAsArray = (array)$object;
-        
+
         foreach ($objectAsArray as $key => $value) {
-            
+
             $newKey = $this->fixKey($key);
             if ($newKey != $key) {
                 $this->replaceKey($objectAsArray, $key, $newKey);
@@ -71,10 +74,10 @@ class PopoTools
                 }
             }
         }
-        
+
         return $objectAsArray;
     }
-    
+
     /**
      * @param $array
      * @param $curkey
@@ -88,10 +91,10 @@ class PopoTools
             unset($array[$curkey]);
             return true;
         }
-        
+
         return false;
     }
-    
+
     /**
      * @param string $oldKey
      * @return string

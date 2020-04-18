@@ -8,16 +8,19 @@
 namespace WebAppId\DDD\Requests;
 
 /**
- * @author: Dyan Galih<dyan.galih@gmail.com> https://dyangalih.com
+ * @author: Dyan Galih<dyan.galih@gmail.com>
+ * Date: 18/04/20
+ * Time: 18.55
  * Interface FormRequestContract
+ * @package WebAppId\DDD\Requests
  */
 interface FormRequestContract
 {
     public function authorize(): bool;
-    
+
     public function rules(): array;
-    
+
     public function messages(): array;
-    
+
     public function attributes(): array;
 }

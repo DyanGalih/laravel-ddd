@@ -14,26 +14,29 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller;
 
 /**
- * @author: Dyan Galih<dyan.galih@gmail.com> https://dyangalih.com
+ * @author: Dyan Galih<dyan.galih@gmail.com>
+ * Date: 18/04/20
+ * Time: 18.55
  * Class BaseController
  * @package WebAppId\DDD\Controllers
  */
 class BaseController extends Controller
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
-    
+
     /**
      * @var Container
      */
-    private $container;
-    
+    protected $container;
+
     public function __construct(Container $container)
     {
         $this->container = $container;
     }
-    
+
     /**
      * @return Container
+     * @deprecated
      */
     protected function getContainer()
     {
