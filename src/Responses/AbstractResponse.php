@@ -19,11 +19,11 @@ abstract class AbstractResponse
     /**
      * @var bool
      */
-    protected $status;
+    public $status;
     /**
      * @var string
      */
-    protected $message;
+    public $message;
 
     /**
      * @return bool
