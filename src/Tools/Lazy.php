@@ -1,6 +1,5 @@
 <?php
 
-
 namespace WebAppId\DDD\Tools;
 
 use Exception;
@@ -70,6 +69,14 @@ class Lazy
                     foreach (get_object_vars($fromClass) as $key => $value) {
                         if (property_exists($toClass, $key) && self::_validate($fromClass, $fromClass, $key) && self::_validate($fromClass, $toClass, $key)) {
                             $toClass->$key = $value;
+                        }
+                    }
+                    break;
+                case self::AUTOCAST:
+                    foreach (get_object_vars($toClass) as $key => $value) {
+                        if (property_exists($toClass, $key)) {
+                            $propertyClass = self::_getVarValue($toClass, $key);
+                            $toClass->$key = self::castValue($propertyClass, $fromClass->$key);
                         }
                     }
                     break;
@@ -162,31 +169,37 @@ class Lazy
                 }
             } elseif ($option == self::AUTOCAST) {
                 $propertyClass = self::_getVarValue($toClass, $key);
-
-                switch ($propertyClass) {
-                    case "integer":
-                        $toClass->$key = isset($fromArray[$key]) ? (int)$fromArray[$key] : null;
-                        break;
-                    case "float":
-                        $toClass->$key = isset($fromArray[$key]) ? (float)$fromArray[$key] : null;
-                        break;
-                    case "double":
-                        $toClass->$key = isset($fromArray[$key]) ? (double)$fromArray[$key] : null;
-                        break;
-                    case "boolean":
-                        $toClass->$key = isset($fromArray[$key]) ? (bool)$fromArray[$key] : null;
-                        break;
-                    case "string" :
-                        $toClass->$key = isset($fromArray[$key]) ? (string)$fromArray[$key] : null;
-                        break;
-                    default:
-                        $toClass->$key = isset($fromArray[$key]) ? $fromArray[$key] : null;
-                        break;
+                if (isset($fromArray[$key])) {
+                    $toClass->$key = self::castValue($propertyClass, $fromArray[$key]);
+                } else {
+                    $toClass->$key = null;
                 }
             }
 
         }
         return $toClass;
+    }
+
+    private static function castValue($propertyClass, $from)
+    {
+        switch ($propertyClass) {
+            case "integer":
+                $value = (int)$from;
+                break;
+            case "float":
+                $value = (float)$from;
+                break;
+            case "double":
+                $value = (double)$from;
+                break;
+            case "boolean":
+                $value = (double)$from;
+                break;
+            default :
+                $value = (string)$from;
+                break;
+        }
+        return $value;
     }
 
     /**
