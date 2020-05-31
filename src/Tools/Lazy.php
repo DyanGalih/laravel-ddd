@@ -1,5 +1,6 @@
 <?php
 
+
 namespace WebAppId\DDD\Tools;
 
 use Exception;
@@ -76,7 +77,9 @@ class Lazy
                     foreach (get_object_vars($toClass) as $key => $value) {
                         if (property_exists($toClass, $key)) {
                             $propertyClass = self::_getVarValue($toClass, $key);
-                            $toClass->$key = self::castValue($propertyClass, $fromClass->$key);
+                            if(isset($fromClass->$key)){
+                                $toClass->$key = self::castValue($propertyClass, $fromClass->$key);
+                            }
                         }
                     }
                     break;
@@ -193,7 +196,7 @@ class Lazy
                 $value = (double)$from;
                 break;
             case "boolean":
-                $value = (double)$from;
+                $value = (boolean)$from;
                 break;
             default :
                 $value = (string)$from;
