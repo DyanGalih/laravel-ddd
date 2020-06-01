@@ -77,7 +77,7 @@ class Lazy
                     foreach (get_object_vars($toClass) as $key => $value) {
                         if (property_exists($toClass, $key)) {
                             $propertyClass = self::_getVarValue($toClass, $key);
-                            if(isset($fromClass->$key)){
+                            if (isset($fromClass->$key)) {
                                 $toClass->$key = self::castValue($propertyClass, $fromClass->$key);
                             }
                         }
@@ -195,8 +195,17 @@ class Lazy
             case "double":
                 $value = (double)$from;
                 break;
+            case "real":
+                $value = (real)$from;
+                break;
             case "boolean":
                 $value = (boolean)$from;
+                break;
+            case "object":
+                $value = (object)$from;
+                break;
+            case "array":
+                $value = (array)$from;
                 break;
             default :
                 $value = (string)$from;
