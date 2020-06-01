@@ -195,9 +195,6 @@ class Lazy
             case "double":
                 $value = (double)$from;
                 break;
-            case "real":
-                $value = (real)$from;
-                break;
             case "boolean":
                 $value = (boolean)$from;
                 break;
