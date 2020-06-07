@@ -3,7 +3,7 @@
  * Created by PhpStorm.
  */
 
-namespace WebAppId\DDD\Traits;
+namespace DyanGalih\DDD\Traits;
 
 use Faker\Factory as Faker;
 use Illuminate\Container\Container;
@@ -101,6 +101,6 @@ trait TestCaseTrait
      */
     protected function resolveApplicationHttpKernel($app)
     {
-        $app->singleton('Illuminate\Contracts\Http\Kernel', 'WebAppId\DDD\Kernel\Http\Kernel');
+        $app->singleton('Illuminate\Contracts\Http\Kernel', 'DyanGalih\DDD\Kernel\Http\Kernel');
     }
 }
