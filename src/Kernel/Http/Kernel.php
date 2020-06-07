@@ -3,7 +3,7 @@
  * Created by PhpStorm.
  */
 
-namespace DyanGalih\DDD\Kernel\Http;
+namespace WebAppId\DDD\Kernel\Http;
 
 use WebAppId\User\Middleware\RoleCheck;
 
