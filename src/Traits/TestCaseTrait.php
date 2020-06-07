@@ -65,4 +65,30 @@ trait TestCaseTrait
         $this->container = new Container();
         parent::__construct($name, $data, $dataName);
     }
+
+    protected function secure()
+    {
+        $user = new User;
+        $user = $user->find('1');
+        if ($user != null) {
+            $this->be($user);
+        } else {
+            dd('please add user with id 1 to run this unit test');
+        }
+        return $user;
+    }
+
+    protected function sendToLog(string $serviceName, string $endpoint, array $data)
+    {
+        error_log('==========================================================');
+        error_log('Service Name : ' . $serviceName);
+        error_log('Endpoint : ' . $endpoint);
+        error_log('Payload : ' . json_encode($data));
+    }
+
+    protected function resultLog(string $result){
+        error_log('==========================================================');
+        error_log('Sample Result : ' . $result);
+        error_log('==========================================================');
+    }
 }
