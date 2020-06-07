@@ -7,6 +7,7 @@ namespace WebAppId\DDD\Traits;
 
 use Faker\Factory as Faker;
 use Illuminate\Container\Container;
+use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Artisan;
 use WebAppId\User\Models\User;
 
@@ -90,5 +91,16 @@ trait TestCaseTrait
         error_log('==========================================================');
         error_log('Sample Result : ' . $result);
         error_log('==========================================================');
+    }
+
+    /**
+     * Resolve application HTTP Kernel implementation.
+     *
+     * @param Application $app
+     * @return void
+     */
+    protected function resolveApplicationHttpKernel($app)
+    {
+        $app->singleton('Illuminate\Contracts\Http\Kernel', 'WebAppId\DDD\Kernel\Http\Kernel');
     }
 }
