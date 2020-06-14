@@ -74,6 +74,7 @@ trait TestCaseTrait
         if ($user != null) {
             if ($user->api_token == null) {
                 $user->api_token = $this->getFaker()->uuid;
+                $user->save();
             }
             $this->be($user);
         } else {
