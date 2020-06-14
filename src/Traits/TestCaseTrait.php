@@ -36,7 +36,7 @@ trait TestCaseTrait
         return $this->faker->create('id_ID');
     }
 
-    public function tearDown():void
+    public function tearDown(): void
     {
         Artisan::call('migrate:reset');
         parent::tearDown();
@@ -44,7 +44,7 @@ trait TestCaseTrait
 
     protected function getEnvironmentSetUp($app)
     {
-        $app['config']->set('auth.providers.users.model', User::class );
+        $app['config']->set('auth.providers.users.model', User::class);
         $app['config']->set('app.key', 'AckfSECXIvnK5r28GVIWUAxmbBSjTsmF');
         $app['config']->set('database.default', 'sqlite');
         $app['config']->set('database.connections.sqlite', [
@@ -72,6 +72,9 @@ trait TestCaseTrait
         $user = new User;
         $user = $user->find('1');
         if ($user != null) {
+            if ($user->api_token == null) {
+                $user->api_token = $this->getFaker()->uuid;
+            }
             $this->be($user);
         } else {
             dd('please add user with id 1 to run this unit test');
@@ -87,7 +90,8 @@ trait TestCaseTrait
         error_log('Payload : ' . json_encode($data));
     }
 
-    protected function resultLog(string $result){
+    protected function resultLog(string $result)
+    {
         error_log('==========================================================');
         error_log('Sample Result : ' . $result);
         error_log('==========================================================');
